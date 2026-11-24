@@ -13864,7 +13864,8 @@ function LecturePlayerModal({ lecture, isCompleted, savedNote, onClose, onToggle
 }
 // src/components/StudyMaterialModal.tsx
 function PdfViewerModal({ note, isBookmarked, onToggleBookmark, onClose }) {
-	const handleDownloadText = () => {
+	const [exportNotice, setExportNotice] = (0, import_react.useState)(null);
+	const handleDownloadText = async () => {
 		const content = [
 			`PRADEEP TEACHING CENTER - ${note.title}`,
 			`${note.subtitle} (${note.updatedLabel})`,
@@ -13877,13 +13878,27 @@ function PdfViewerModal({ note, isBookmarked, onToggleBookmark, onClose }) {
 				""
 			])
 		].filter(Boolean).join("\n");
-		const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-		const url = URL.createObjectURL(blob);
-		const anchor = document.createElement("a");
-		anchor.href = url;
-		anchor.download = `${note.id}.txt`;
-		anchor.click();
-		URL.revokeObjectURL(url);
+		if (typeof navigator !== "undefined" && typeof navigator.share === "function") try {
+			await navigator.share({
+				title: `${note.title} - Pradeep Teaching Center`,
+				text: content
+			});
+			return;
+		} catch {}
+		try {
+			const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+			const url = URL.createObjectURL(blob);
+			const anchor = document.createElement("a");
+			anchor.href = url;
+			anchor.download = `${note.id}.txt`;
+			anchor.click();
+			URL.revokeObjectURL(url);
+		} catch {}
+		if (typeof navigator !== "undefined" && navigator.clipboard) try {
+			await navigator.clipboard.writeText(content);
+			setExportNotice("Copied");
+			window.setTimeout(() => setExportNotice(null), 1800);
+		} catch {}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-xs p-0 sm:p-4",
@@ -13930,7 +13945,7 @@ function PdfViewerModal({ note, isBookmarked, onToggleBookmark, onClose }) {
 							type: "button",
 							onClick: handleDownloadText,
 							className: "min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors",
-							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-4 h-4" }), "Download"]
+							children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-4 h-4" }), exportNotice ?? "Share / Save"]
 						}),
 						/* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 							type: "button",
@@ -13983,7 +13998,8 @@ function QuestionBankModal({ bank, onRecordScore, onClose }) {
 		setSelectedAnswers({});
 		setSubmitted(false);
 	};
-	const handleDownloadPyq = () => {
+	const [pyqNotice, setPyqNotice] = (0, import_react.useState)(null);
+	const handleDownloadPyq = async () => {
 		const content = [
 			`PRADEEP TEACHING CENTER - ${bank.title}`,
 			`${bank.subtitle} (${bank.year})`,
@@ -13997,13 +14013,27 @@ function QuestionBankModal({ bank, onRecordScore, onClose }) {
 				""
 			])
 		].join("\n");
-		const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
-		const url = URL.createObjectURL(blob);
-		const anchor = document.createElement("a");
-		anchor.href = url;
-		anchor.download = `${bank.id}.txt`;
-		anchor.click();
-		URL.revokeObjectURL(url);
+		if (typeof navigator !== "undefined" && typeof navigator.share === "function") try {
+			await navigator.share({
+				title: `${bank.title} - Pradeep Teaching Center`,
+				text: content
+			});
+			return;
+		} catch {}
+		try {
+			const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+			const url = URL.createObjectURL(blob);
+			const anchor = document.createElement("a");
+			anchor.href = url;
+			anchor.download = `${bank.id}.txt`;
+			anchor.click();
+			URL.revokeObjectURL(url);
+		} catch {}
+		if (typeof navigator !== "undefined" && navigator.clipboard) try {
+			await navigator.clipboard.writeText(content);
+			setPyqNotice("Copied");
+			window.setTimeout(() => setPyqNotice(null), 1800);
+		} catch {}
 	};
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 		className: "fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 backdrop-blur-xs p-0 sm:p-4",
@@ -14043,7 +14073,7 @@ function QuestionBankModal({ bank, onRecordScore, onClose }) {
 						type: "button",
 						onClick: handleDownloadPyq,
 						className: "min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors",
-						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-4 h-4" }), "Download"]
+						children: [/* @__PURE__ */ (0, import_jsx_runtime.jsx)(Download, { className: "w-4 h-4" }), pyqNotice ?? "Share / Save"]
 					}), /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", {
 						type: "button",
 						onClick: onClose,
@@ -15016,6 +15046,56 @@ function App() {
 			window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 		} catch {}
 	}, [state]);
+	(0, import_react.useEffect)(() => {
+		const win = window;
+		win.__ptcHandleAndroidBack = () => {
+			if (toppersModalOpen) {
+				setToppersModalOpen(false);
+				return true;
+			}
+			if (notificationsOpen) {
+				setNotificationsOpen(false);
+				return true;
+			}
+			if (activeLecture) {
+				setActiveLecture(null);
+				return true;
+			}
+			if (activePdfNote) {
+				setActivePdfNote(null);
+				return true;
+			}
+			if (activeQuestionBank) {
+				setActiveQuestionBank(null);
+				return true;
+			}
+			if (activeSubject) {
+				setActiveSubject(null);
+				return true;
+			}
+			if (searchQuery.trim()) {
+				setSearchQuery("");
+				return true;
+			}
+			if (activeTab !== "home") {
+				setActiveTab("home");
+				return true;
+			}
+			return false;
+		};
+		return () => {
+			delete win.__ptcHandleAndroidBack;
+		};
+	}, [
+		toppersModalOpen,
+		notificationsOpen,
+		activeLecture,
+		activePdfNote,
+		activeQuestionBank,
+		activeSubject,
+		searchQuery,
+		activeTab
+	]);
 	const unreadCount = notifications.filter((n) => n.unread).length;
 	const pushActivity = (label, detail, type) => {
 		setState((prev) => ({
@@ -15143,10 +15223,10 @@ function App() {
 		}
 	];
 	return /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
-		className: "min-h-screen flex flex-col bg-[#F6F8FB] text-slate-900 pb-20 lg:pb-10",
+		className: "min-h-screen flex flex-col bg-[#F6F8FB] text-slate-900 pb-24 lg:pb-10",
 		children: [
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("header", {
-				className: "sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/70",
+				className: "sticky top-0 z-30 pt-safe bg-white/95 backdrop-blur-md border-b border-slate-200/70",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsxs)("div", {
 					className: "max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4 sm:gap-8",
 					children: [
@@ -15612,7 +15692,7 @@ function App() {
 			}),
 			/* @__PURE__ */ (0, import_jsx_runtime.jsx)("nav", {
 				"aria-label": "Bottom navigation",
-				className: "lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80",
+				className: "lg:hidden fixed bottom-0 left-0 right-0 z-30 pb-safe bg-white/95 backdrop-blur-md border-t border-slate-200/80",
 				children: /* @__PURE__ */ (0, import_jsx_runtime.jsx)("div", {
 					className: "grid grid-cols-5 items-center h-16 max-w-xl mx-auto px-1",
 					children: navItems.map((item) => {

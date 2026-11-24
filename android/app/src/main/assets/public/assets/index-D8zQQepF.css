@@ -408,6 +408,11 @@
     --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   }
 
+  html, body {
+    overscroll-behavior-y: contain;
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     font-family: var(--font-body);
     color: #111827;
@@ -416,6 +421,10 @@
 
   h1, h2, h3, h4, .font-display {
     font-family: var(--font-display);
+  }
+
+  button, a, select, input {
+    touch-action: manipulation;
   }
 
   .font-mono-nums {
@@ -1684,8 +1693,8 @@
     padding-bottom: var(--spacing);
   }
 
-  .pb-20 {
-    padding-bottom: calc(var(--spacing) * 20);
+  .pb-24 {
+    padding-bottom: calc(var(--spacing) * 24);
   }
 
   .pl-2 {
@@ -2454,6 +2463,14 @@
       padding-bottom: calc(var(--spacing) * 10);
     }
   }
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
 .no-scrollbar::-webkit-scrollbar {

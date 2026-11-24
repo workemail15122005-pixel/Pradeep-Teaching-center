@@ -24,7 +24,9 @@ export function PdfViewerModal({
   onToggleBookmark,
   onClose,
 }: PdfViewerModalProps) {
-  const handleDownloadText = () => {
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
+
+  const handleDownloadText = async () => {
     const content = [
       `PRADEEP TEACHING CENTER - ${note.title}`,
       `${note.subtitle} (${note.updatedLabel})`,
@@ -40,13 +42,39 @@ export function PdfViewerModal({
       .filter(Boolean)
       .join('\n');
 
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `${note.id}.txt`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: `${note.title} - Pradeep Teaching Center`,
+          text: content,
+        });
+        return;
+      } catch {
+        // User cancelled share or WebView blocked share; fall back cleanly
+      }
+    }
+
+    try {
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${note.id}.txt`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Ignore download fallback errors in restricted WebViews
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(content);
+        setExportNotice('Copied');
+        window.setTimeout(() => setExportNotice(null), 1800);
+      } catch {
+        // Ignore clipboard failure
+      }
+    }
   };
 
   return (
@@ -92,7 +120,7 @@ export function PdfViewerModal({
               className="min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Download className="w-4 h-4" />
-              Download
+              {exportNotice ?? 'Share / Save'}
             </button>
             <button
               type="button"
@@ -163,7 +191,9 @@ export function QuestionBankModal({
     setSubmitted(false);
   };
 
-  const handleDownloadPyq = () => {
+  const [pyqNotice, setPyqNotice] = useState<string | null>(null);
+
+  const handleDownloadPyq = async () => {
     const content = [
       `PRADEEP TEACHING CENTER - ${bank.title}`,
       `${bank.subtitle} (${bank.year})`,
@@ -178,13 +208,39 @@ export function QuestionBankModal({
       ]),
     ].join('\n');
 
-    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement('a');
-    anchor.href = url;
-    anchor.download = `${bank.id}.txt`;
-    anchor.click();
-    URL.revokeObjectURL(url);
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: `${bank.title} - Pradeep Teaching Center`,
+          text: content,
+        });
+        return;
+      } catch {
+        // Fall through cleanly
+      }
+    }
+
+    try {
+      const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = `${bank.id}.txt`;
+      anchor.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      // Ignore restricted WebView download error
+    }
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      try {
+        await navigator.clipboard.writeText(content);
+        setPyqNotice('Copied');
+        window.setTimeout(() => setPyqNotice(null), 1800);
+      } catch {
+        // Ignore clipboard failure
+      }
+    }
   };
 
   return (
@@ -217,7 +273,7 @@ export function QuestionBankModal({
               className="min-h-[40px] px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors"
             >
               <Download className="w-4 h-4" />
-              Download
+              {pyqNotice ?? 'Share / Save'}
             </button>
             <button
               type="button"

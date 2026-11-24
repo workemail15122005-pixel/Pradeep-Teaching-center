@@ -127,6 +127,59 @@ export default function App() {
     }
   }, [state]);
 
+  useEffect(() => {
+    const win = window as unknown as {
+      __ptcHandleAndroidBack?: () => boolean;
+    };
+    win.__ptcHandleAndroidBack = () => {
+      if (toppersModalOpen) {
+        setToppersModalOpen(false);
+        return true;
+      }
+      if (notificationsOpen) {
+        setNotificationsOpen(false);
+        return true;
+      }
+      if (activeLecture) {
+        setActiveLecture(null);
+        return true;
+      }
+      if (activePdfNote) {
+        setActivePdfNote(null);
+        return true;
+      }
+      if (activeQuestionBank) {
+        setActiveQuestionBank(null);
+        return true;
+      }
+      if (activeSubject) {
+        setActiveSubject(null);
+        return true;
+      }
+      if (searchQuery.trim()) {
+        setSearchQuery('');
+        return true;
+      }
+      if (activeTab !== 'home') {
+        setActiveTab('home');
+        return true;
+      }
+      return false;
+    };
+    return () => {
+      delete win.__ptcHandleAndroidBack;
+    };
+  }, [
+    toppersModalOpen,
+    notificationsOpen,
+    activeLecture,
+    activePdfNote,
+    activeQuestionBank,
+    activeSubject,
+    searchQuery,
+    activeTab,
+  ]);
+
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   const pushActivity = (
@@ -284,9 +337,9 @@ export default function App() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F6F8FB] text-slate-900 pb-20 lg:pb-10">
+    <div className="min-h-screen flex flex-col bg-[#F6F8FB] text-slate-900 pb-24 lg:pb-10">
       {/* Top App Bar (Clean 3-Zone Layout) */}
-      <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/70">
+      <header className="sticky top-0 z-30 pt-safe bg-white/95 backdrop-blur-md border-b border-slate-200/70">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-4 sm:gap-8">
           {/* Brand Zone */}
           <button
@@ -801,7 +854,7 @@ export default function App() {
       {/* Mobile & Tablet Fixed Bottom Tab Bar */}
       <nav
         aria-label="Bottom navigation"
-        className="lg:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200/80"
+        className="lg:hidden fixed bottom-0 left-0 right-0 z-30 pb-safe bg-white/95 backdrop-blur-md border-t border-slate-200/80"
       >
         <div className="grid grid-cols-5 items-center h-16 max-w-xl mx-auto px-1">
           {navItems.map((item) => {
