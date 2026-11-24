@@ -4,8 +4,8 @@ import fs from 'fs';
 import path from 'path';
 import {defineConfig} from 'vite';
 
-export default defineConfig(() => {
-  return {base: '/Pradeep-Teaching-center/'}\`
+export default defineConfig({base:'/Pradeep-Teaching/'})'
+  return {base: '/Pradeep-Teaching-center/'})'
     plugins: [
       react(),
       tailwindcss(),
