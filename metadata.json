@@ -1,0 +1,6 @@
+{
+  "name": "Pradeep Teaching Center",
+  "description": "Interactive student learning app for Physics, Chemistry, and Mathematics video lectures, PDF notes, live classes, and PYQ question banks.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
