@@ -41,6 +41,7 @@ import {
   LiveClassesView,
   ProfileView,
 } from './components/SubPages';
+import { OfflineIndicator } from './components/PWAInstallUI';
 
 type NavTab = 'home' | 'courses' | 'live' | 'activity' | 'profile';
 
@@ -905,6 +906,8 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <OfflineIndicator />
     </div>
   );
 }

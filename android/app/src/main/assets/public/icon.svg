@@ -1,0 +1,33 @@
+<svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1E3A8A" />
+      <stop offset="1" stop-color="#2563EB" />
+    </linearGradient>
+    <linearGradient id="shield-grad" x1="120" y1="80" x2="392" y2="432" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0F172A" />
+      <stop offset="1" stop-color="#1E3A8A" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg-grad)" />
+  <path
+    d="M256 70L408 122V244C408 338 342 406 256 440C170 406 104 338 104 244V122L256 70Z"
+    fill="url(#shield-grad)"
+    stroke="#F59E0B"
+    stroke-width="18"
+  />
+  <path
+    d="M256 122C256 122 284 152 284 176C284 192 271.5 204 256 204C240.5 204 228 192 228 176C228 152 256 122 256 122Z"
+    fill="#FACC15"
+  />
+  <text
+    x="256"
+    y="316"
+    text-anchor="middle"
+    fill="#FFFFFF"
+    font-family="sans-serif"
+    font-weight="800"
+    font-size="112"
+    letter-spacing="4"
+  >P.T.C</text>
+</svg>
