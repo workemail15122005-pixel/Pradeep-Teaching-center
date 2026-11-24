@@ -35,9 +35,12 @@ public class MainActivity extends BridgeActivity {
                     return;
                 }
                 webView.evaluateJavascript(
-                        "(function(){ return typeof window.__ptcHandleAndroidBack === 'function' ? window.__ptcHandleAndroidBack() : false; })()",
+                        "(function(){ return typeof window.__ptcHandleAndroidBack === 'function' ? Boolean(window.__ptcHandleAndroidBack()) : false; })()",
                         result -> {
-                            boolean handled = "true".equals(result);
+                            if (isFinishing() || isDestroyed()) {
+                                return;
+                            }
+                            boolean handled = result != null && "true".equalsIgnoreCase(result.trim());
                             if (!handled) {
                                 if (webView.canGoBack()) {
                                     webView.goBack();
